@@ -55,7 +55,7 @@ export const createTrip = (tripData) => {
 
 export const getDriverTrips = (status = null) => {
   const queryParams = status ? `?status=${status}` : ""
-  return apiRequest(`/trips/driver${queryParams}`)
+  return apiRequest(`/trips/my-trips${queryParams}`)
 }
 
 export const getTripDetails = (tripId) => {
@@ -63,7 +63,7 @@ export const getTripDetails = (tripId) => {
 }
 
 export const getTripPassengers = (tripId) => {
-  return apiRequest(`/bookings?trip_id=${tripId}`)
+  return apiRequest(`/bookings/${tripId}`)
 }
 
 export const updateTripStatus = (tripId, status) => {
@@ -78,12 +78,16 @@ export const confirmPayment = (paymentId) => {
   return apiRequest(`/payments/${paymentId}/confirm`, "POST")
 }
 
+
 export const ratePassenger = (ratingData) => {
   return apiRequest("/ratings", "POST", ratingData)
 }
 
 export const getDriverStats = () => {
   return apiRequest("/driver/stats")
+}
+export const getTrips = () => {
+  return apiRequest("/trips/my-trips")
 }
 
 export const getPopularRoutes = () => {

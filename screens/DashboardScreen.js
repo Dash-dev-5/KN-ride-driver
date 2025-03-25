@@ -12,7 +12,7 @@ import {
   Animated,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { getDriverTrips, getDriverStats, getPopularRoutes } from "../api/apiService"
+import { getDriverTrips, getDriverStats, getPopularRoutes, getTrips } from "../api/apiService"
 import { ThemeContext } from "../context/ThemeContext"
 import { getColors } from "../styles/theme"
 import { format } from "date-fns"
@@ -23,6 +23,7 @@ const DashboardScreen = ({ navigation }) => {
   const [upcomingTrips, setUpcomingTrips] = useState([])
   const [stats, setStats] = useState(null)
   const [popularRoutes, setPopularRoutes] = useState([])
+  const [myStripsData, setMyStripsData] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const { isDarkMode } = useContext(ThemeContext)
@@ -53,17 +54,23 @@ const DashboardScreen = ({ navigation }) => {
   const fetchData = async () => {
     try {
       // Fetch active trips (ongoing)
-      const activeData = await getDriverTrips("ongoing")
-      setActiveTrips(activeData.data || [])
+      // const activeData = await getDriverTrips("ongoing")
+      // setActiveTrips(activeData.data || [])
 
       // Fetch upcoming trips (scheduled)
-      const upcomingData = await getDriverTrips("scheduled")
-      setUpcomingTrips(upcomingData.data || [])
-
+      // const upcomingData = await getDriverTrips("scheduled")
+      // setUpcomingTrips(upcomingData.data || [])
+      
       // Fetch driver stats
-      const statsData = await getDriverStats()
+      // const statsData = await getDriverStats()
+      const myStripsData = await getTrips()
+      setMyStripsData(myStripsData.data || [])
+      console.log('...........',myStripsData.data[2].bookings);
+      
       setStats(
-        statsData.data || {
+        // statsData.data 
+        null
+        || {
           total_trips: 0,
           total_earnings: 0,
           total_passengers: 0,
@@ -72,8 +79,8 @@ const DashboardScreen = ({ navigation }) => {
       )
 
       // Fetch popular routes
-      const routesData = await getPopularRoutes()
-      setPopularRoutes(routesData.data || [])
+      // const routesData = await getPopularRoutes()
+      // setPopularRoutes(routesData.data || [])
 
       setLoading(false)
     } catch (error) {
@@ -124,7 +131,7 @@ const DashboardScreen = ({ navigation }) => {
             <View style={styles.statItem}>
               <Ionicons name="people-outline" size={18} color={colors.textSecondary} />
               <Text style={[styles.statText, { color: colors.textSecondary }]}>
-                {trip.booked_seats}/{trip.available_seats} places
+                {trip.bookings.length}/{trip.available_seats} places
               </Text>
             </View>
             <View style={styles.statItem}>
@@ -232,8 +239,8 @@ const DashboardScreen = ({ navigation }) => {
       >
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Trajets à venir</Text>
-          {upcomingTrips.length > 0 ? (
-            upcomingTrips.map((trip) => renderTripCard(trip))
+          {myStripsData.length > 0 ? (
+            myStripsData.map((trip) => renderTripCard(trip))
           ) : (
             <View style={[styles.emptyState, { backgroundColor: colors.card }]}>
               <Ionicons name="calendar-outline" size={40} color={colors.textSecondary} />

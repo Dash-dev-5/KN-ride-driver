@@ -88,14 +88,21 @@ const CreateTripScreen = ({ navigation, route }) => {
     const formattedDateTime = format(combinedDateTime, "yyyy-MM-dd HH:mm:ss")
 
     setLoading(true)
+  //   {
+  //     "from_city": "Kinshasa",
+  //     "to_city": "Lubumbashi",
+  //     "departure_time": "2025-03-23 10:00:00",
+  //     "total_seats": 4,
+  //     "price_per_seat": 50.00
+  // }
     try {
       const tripData = {
         from_city: fromCity,
         to_city: toCity,
         departure_time: formattedDateTime,
-        available_seats: Number.parseInt(availableSeats),
+        total_seats: Number.parseInt(availableSeats),
         price_per_seat: Number.parseInt(pricePerSeat),
-        notes: notes || undefined,
+        // notes: notes || undefined,
       }
 
       const response = await createTrip(tripData)
@@ -104,7 +111,7 @@ const CreateTripScreen = ({ navigation, route }) => {
       Alert.alert("Succès", "Votre trajet a été créé avec succès", [
         {
           text: "OK",
-          onPress: () => navigation.navigate("Dashboard"),
+          onPress: () => navigation.navigate("MainTabs"),
         },
       ])
     } catch (error) {
@@ -227,7 +234,7 @@ const CreateTripScreen = ({ navigation, route }) => {
               </View>
             </View>
 
-            <View style={styles.inputContainer}>
+            {/* <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: colors.text }]}>Notes (optionnel)</Text>
               <TextInput
                 style={[
@@ -242,7 +249,7 @@ const CreateTripScreen = ({ navigation, route }) => {
                 value={notes}
                 onChangeText={setNotes}
               />
-            </View>
+            </View> */}
 
             <TouchableOpacity
               style={[styles.createButton, { backgroundColor: colors.primary }]}

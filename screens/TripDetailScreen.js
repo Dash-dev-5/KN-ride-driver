@@ -43,6 +43,8 @@ const TripDetailScreen = ({ route, navigation }) => {
     try {
       const response = await getTripDetails(tripId)
       setTrip(response.trip)
+      console.log('sdfgh',response.trip);
+      
       setLoading(false)
     } catch (error) {
       console.error("Error fetching trip details:", error)
@@ -207,7 +209,7 @@ const TripDetailScreen = ({ route, navigation }) => {
             <View style={styles.detailItem}>
               <Ionicons name="people-outline" size={20} color={colors.primary} />
               <Text style={[styles.detailText, { color: colors.text }]}>
-                {trip.booked_seats}/{trip.available_seats} places réservées
+                {trip.total_seats} réservées et {trip.available_seats} dispo
               </Text>
             </View>
 
@@ -228,17 +230,17 @@ const TripDetailScreen = ({ route, navigation }) => {
 
           <View style={styles.earnings}>
             <Text style={[styles.earningsTitle, { color: colors.text }]}>Revenus estimés</Text>
-            <View style={styles.earningsDetails}>
+            <View style={[styles.earningsDetails, { backgroundColor: colors.background }]}>
               <View style={styles.earningsItem}>
                 <Text style={[styles.earningsLabel, { color: colors.textSecondary }]}>Places réservées</Text>
                 <Text style={[styles.earningsValue, { color: colors.text }]}>
-                  {trip.booked_seats} x {trip.price_per_seat} Fc
+                  {trip.total_seats} x {trip.price_per_seat} Fc
                 </Text>
               </View>
               <View style={styles.earningsItem}>
                 <Text style={[styles.earningsLabel, { color: colors.textSecondary }]}>Total</Text>
                 <Text style={[styles.earningsTotal, { color: colors.primary }]}>
-                  {trip.booked_seats * trip.price_per_seat} Fc
+                  {trip.total_seats * trip.price_per_seat} Fc
                 </Text>
               </View>
             </View>
@@ -255,7 +257,7 @@ const TripDetailScreen = ({ route, navigation }) => {
         <View style={styles.actionButtons}>
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: colors.card }]}
-            onPress={() => navigation.navigate("PassengerList", { tripId: trip.id })}
+            onPress={() => navigation.navigate("PassengerList", { tripId: trip.id , trip })}
           >
             <Ionicons name="people" size={20} color={colors.primary} />
             <Text style={[styles.actionButtonText, { color: colors.primary }]}>Voir les passagers</Text>

@@ -41,11 +41,15 @@ const HistoryScreen = ({ navigation }) => {
   const fetchTrips = async () => {
     try {
       // Fetch completed and cancelled trips
-      const completedData = await getDriverTrips("completed")
-      const cancelledData = await getDriverTrips("cancelled")
+      const tripsData = await getDriverTrips();
 
+      // Filtrer uniquement les trajets avec statut "completed" ou "cancelled"
+      const filteredTrips = (tripsData.data || []).filter(
+        trip => trip.status === "completed" || trip.status === "cancelled"
+      );
+      
       // Combine and sort by date (newest first)
-      const allTrips = [...(completedData.data || []), ...(cancelledData.data || [])].sort(
+      const allTrips = [...(filteredTrips.data || [])].sort(
         (a, b) => new Date(b.departure_time) - new Date(a.departure_time),
       )
 

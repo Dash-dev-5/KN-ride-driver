@@ -13,12 +13,12 @@ import {
   Animated,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { getTripPassengers, updateTripStatus, confirmPayment } from "../api/apiService"
+import { getTripPassengers, updateTripStatus, confirmPayment, getTrips } from "../api/apiService"
 import { ThemeContext } from "../context/ThemeContext"
 import { getColors } from "../styles/theme"
 
 const PassengerListScreen = ({ route, navigation }) => {
-  const { tripId } = route.params
+  const { tripId, trip } = route.params
   const [passengers, setPassengers] = useState([])
   const [tripDetails, setTripDetails] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -50,9 +50,12 @@ const PassengerListScreen = ({ route, navigation }) => {
 
   const fetchPassengers = async () => {
     try {
-      const response = await getTripPassengers(tripId)
-      setPassengers(response.data.bookings || [])
-      setTripDetails(response.data.trip || null)
+      // const response = await getTripPassengers(tripId)
+      // const response = await getTrips()
+      console.log('LLLLLLL',trip.bookings);
+      
+      setPassengers(trip.bookings || [])
+      // setTripDetails(trip || null)
       setLoading(false)
     } catch (error) {
       console.error("Error fetching passengers:", error)
@@ -104,7 +107,7 @@ const PassengerListScreen = ({ route, navigation }) => {
   }
 
   const renderPassengerItem = ({ item }) => {
-    const isPaid = item.payment_status === "paid"
+    const isPaid = item.status === "confirmed"
 
     return (
       <Animated.View
@@ -121,8 +124,8 @@ const PassengerListScreen = ({ route, navigation }) => {
                 style={styles.passengerAvatar}
               />
               <View>
-                <Text style={[styles.passengerName, { color: colors.text }]}>{item.name || "Passager"}</Text>
-                <Text style={[styles.passengerPhone, { color: colors.textSecondary }]}>{item.phone || "N/A"}</Text>
+                <Text style={[styles.passengerName, { color: colors.text }]}>{item.user.name || "Passager"}</Text>
+                <Text style={[styles.passengerPhone, { color: colors.textSecondary }]}>{item.user.phone || "N/A"}</Text>
               </View>
             </View>
             <View
@@ -146,11 +149,11 @@ const PassengerListScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.detailItem}>
               <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Montant</Text>
-              <Text style={[styles.detailValue, { color: colors.text }]}>{item.amount} Fc</Text>
+              <Text style={[styles.detailValue, { color: colors.text }]}>{item.total_amount} Fc</Text>
             </View>
             <View style={styles.detailItem}>
               <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Point de prise</Text>
-              <Text style={[styles.detailValue, { color: colors.text }]}>{item.pickup_location || "N/A"}</Text>
+              <Text style={[styles.detailValue, { color: colors.text }]}>{item.pickup_location || "N/A"} à {item.dropoff_location || "N/A"}</Text>
             </View>
           </View>
 
@@ -159,7 +162,7 @@ const PassengerListScreen = ({ route, navigation }) => {
               style={[styles.actionButton, { backgroundColor: colors.primary + "20" }]}
               onPress={() => {
                 // Call passenger
-                Alert.alert("Appeler", `Appeler ${item.name} au ${item.phone}?`, [
+                Alert.alert("Appeler", `Appeler ${item.user.name} au ${item.user.phone}?`, [
                   { text: "Annuler", style: "cancel" },
                   { text: "Appeler", style: "default" },
                 ])
@@ -217,19 +220,19 @@ const PassengerListScreen = ({ route, navigation }) => {
       >
         <View style={styles.tripInfo}>
           <Text style={[styles.tripRoute, { color: colors.text }]}>
-            {tripDetails?.from_city} → {tripDetails?.to_city}
+            {trip?.from_city} → {trip?.to_city}
           </Text>
           <View style={styles.tripStats}>
             <View style={styles.tripStat}>
               <Ionicons name="people-outline" size={18} color={colors.textSecondary} />
               <Text style={[styles.tripStatText, { color: colors.textSecondary }]}>
-                {passengers.length}/{tripDetails?.available_seats} passagers
+                {passengers.length}/{trip?.available_seats} passagers dispo
               </Text>
             </View>
             <View style={styles.tripStat}>
               <Ionicons name="cash-outline" size={18} color={colors.textSecondary} />
               <Text style={[styles.tripStatText, { color: colors.textSecondary }]}>
-                {tripDetails?.price_per_seat} Fc/place
+                {trip?.price_per_seat} Fc/place
               </Text>
             </View>
           </View>
